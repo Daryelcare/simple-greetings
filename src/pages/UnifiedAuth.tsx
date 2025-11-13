@@ -204,7 +204,8 @@ function UnifiedAuthContent() {
             }
 
             // Update employee last login
-            await supabase
+            console.log('Updating last_login for employee:', employee.id, employee.name);
+            const { error: updateError } = await supabase
               .from('employees')
               .update({
                 last_login: new Date().toISOString(),
@@ -212,6 +213,17 @@ function UnifiedAuthContent() {
                 locked_until: null
               })
               .eq('id', employee.id);
+
+            if (updateError) {
+              console.error('Failed to update last login:', updateError);
+              toast({
+                title: "Warning",
+                description: "Login successful, but activity tracking failed.",
+                variant: "default",
+              });
+            } else {
+              console.log('Successfully updated last_login for:', employee.name);
+            }
 
             toast({
               title: "Login successful",
