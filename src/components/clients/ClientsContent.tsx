@@ -543,12 +543,6 @@ export function ClientsContent() {
           </p>
         </div>
         <div className="flex gap-2">
-          {hasPageAction('clients', 'import') && (
-            <Button onClick={() => setImportDialogOpen(true)} variant="outline" className="gap-2">
-              <Upload className="w-4 h-4" />
-              Import
-            </Button>
-          )}
           {selectedClients.length > 0 && hasPageAction('clients', 'delete') && (
             <Button
               variant="destructive"
@@ -557,6 +551,12 @@ export function ClientsContent() {
             >
               <Trash2 className="w-4 h-4" />
               Delete Selected ({selectedClients.length})
+            </Button>
+          )}
+          {hasPageAction('clients', 'import') && (
+            <Button onClick={() => setImportDialogOpen(true)} variant="outline" className="gap-2">
+              <Upload className="w-4 h-4" />
+              Import
             </Button>
           )}
           {hasPageAction('clients', 'create') && (
@@ -570,40 +570,36 @@ export function ClientsContent() {
 
 
       {/* Search and Filter Controls */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search clients..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="w-full sm:w-64">
-              <Select value={branchFilter} onValueChange={setBranchFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by branch" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Branches</SelectItem>
-                  {branches
-                    .filter(branch => isAdmin || getAccessibleBranches().includes(branch.id))
-                    .map((branch) => (
-                      <SelectItem key={branch.id} value={branch.id}>
-                        {branch.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder="Search clients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-card border-input-border"
+            />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="w-full sm:w-64">
+          <Select value={branchFilter} onValueChange={setBranchFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="Filter by branch" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Branches</SelectItem>
+              {branches
+                .filter(branch => isAdmin || getAccessibleBranches().includes(branch.id))
+                .map((branch) => (
+                  <SelectItem key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {/* Clients Table */}
       <Card>
