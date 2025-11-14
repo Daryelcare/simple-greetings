@@ -534,9 +534,13 @@ export function ClientsContent() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Building className="w-8 h-8 text-primary" />
-          <h1 className="text-3xl font-bold text-foreground">Clients</h1>
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            Client Management
+          </h1>
+          <p className="text-lg text-muted-foreground">
+            Manage your clients and their information
+          </p>
         </div>
         <div className="flex gap-2">
           {hasPageAction('clients', 'import') && (
