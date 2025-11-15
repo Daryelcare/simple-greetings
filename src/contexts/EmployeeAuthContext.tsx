@@ -67,11 +67,7 @@ export function EmployeeAuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
-      // Cast languages from Json to string[] and ensure it's an array
-      setEmployee({
-        ...employeeData,
-        languages: Array.isArray(employeeData.languages) ? employeeData.languages as string[] : []
-      });
+      setEmployee(employeeData);
       return true;
     } catch (error) {
       console.error('Error in fetchEmployeeData:', error);

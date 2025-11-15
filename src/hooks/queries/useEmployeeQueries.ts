@@ -60,12 +60,7 @@ async function fetchEmployees(): Promise<Employee[]> {
     .order('name');
 
   if (error) throw error;
-  
-  // Cast languages from Json to string[] and ensure proper type
-  return (data || []).map(emp => ({
-    ...emp,
-    languages: Array.isArray(emp.languages) ? emp.languages as string[] : []
-  })) as Employee[];
+  return data || [];
 }
 
 // Fetch branches

@@ -2,7 +2,6 @@
 import { useState, useRef, useMemo } from "react";
 import { Plus, Search, Filter, Mail, Phone, MapPin, Calendar, Users, Building, Clock, User, Upload, Download, X, FileSpreadsheet, AlertCircle, Eye, Edit3, Trash2, Check, Square, RotateCcw, ArrowUpDown, ArrowUp, ArrowDown, Key, CalendarIcon, Activity, Languages } from "lucide-react";
 import { useLanguageOptions } from "@/hooks/queries/useLanguageQueries";
-import { ALL_LANGUAGES } from "@/constants/languages";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,25 +79,12 @@ export type EmployeeSortField = 'name' | 'employee_code' | 'branch_name' | 'work
 export type EmployeeSortDirection = 'asc' | 'desc';
 
 export function EmployeesContent() {
-  console.log('[EmployeesContent] Rendering...');
-  
-  let hookData;
-  try {
-    hookData = useEmployeeData();
-    console.log('[EmployeesContent] useEmployeeData:', hookData);
-  } catch (error) {
-    console.error('[EmployeesContent] Error in useEmployeeData:', error);
-    return <div className="p-8 text-center text-destructive">Error loading employee data. Please refresh the page.</div>;
-  }
-  
-  const { employees, branches, loading, refetchData } = hookData;
+  const { employees, branches, loading, refetchData } = useEmployeeData();
   const { createEmployee: createEmployeeMutation, updateEmployee: updateEmployeeMutation, deleteEmployee: deleteEmployeeMutation } = useEmployeeActions();
   const { syncNow } = useActivitySync();
   const { data: languageOptions = [] } = useLanguageOptions();
   const { getAccessibleBranches, isAdmin } = usePermissions();
   const { canViewEmployees, canCreateEmployees, canEditEmployees, canDeleteEmployees } = usePagePermissions();
-  
-  console.log('[EmployeesContent] Hooks loaded successfully', { employeesCount: employees?.length, loading });
   const [searchTerm, setSearchTerm] = useState("");
   const [branchFilter, setBranchFilter] = useState("all");
   const [sortField, setSortField] = useState<EmployeeSortField>('name');
@@ -166,6 +152,32 @@ export function EmployeesContent() {
   const { toast } = useToast();
 
   // Comprehensive list of common languages
+  const allPossibleLanguages = [
+    "Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Assamese", "Azerbaijani",
+    "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Burmese",
+    "Catalan", "Cebuano", "Chinese", "Corsican", "Croatian", "Czech",
+    "Danish", "Dutch",
+    "English", "Esperanto", "Estonian",
+    "Filipino", "Finnish", "French", "Frisian",
+    "Galician", "Georgian", "German", "Greek", "Gujarati",
+    "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hmong", "Hungarian",
+    "Icelandic", "Igbo", "Indonesian", "Irish", "Italian",
+    "Japanese", "Javanese",
+    "Kannada", "Kazakh", "Khmer", "Korean", "Kurdish", "Kyrgyz",
+    "Lao", "Latin", "Latvian", "Lithuanian", "Luxembourgish",
+    "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Maori", "Marathi", "Mongolian",
+    "Nepali", "Norwegian",
+    "Pashto", "Persian", "Polish", "Portuguese", "Punjabi",
+    "Romanian", "Russian",
+    "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala", "Slovak", "Slovenian", "Somali", "Spanish", "Sundanese", "Swahili", "Swedish",
+    "Tagalog", "Tajik", "Tamil", "Telugu", "Thai", "Turkish",
+    "Ukrainian", "Urdu", "Uzbek",
+    "Vietnamese",
+    "Welsh",
+    "Xhosa",
+    "Yiddish", "Yoruba",
+    "Zulu"
+  ];
 
   // Extract available languages from employees and language options
   useMemo(() => {
@@ -196,12 +208,12 @@ export function EmployeesContent() {
     if (!languageSearch) return [];
     
     // Combine employee languages with all possible languages
-    const allLanguages = new Set([...availableLanguages, ...ALL_LANGUAGES]);
+    const allLanguages = new Set([...availableLanguages, ...allPossibleLanguages]);
     
     return Array.from(allLanguages)
       .filter(lang => lang.toLowerCase().includes(languageSearch.toLowerCase()))
       .sort();
-  }, [availableLanguages, languageSearch]);
+  }, [availableLanguages, languageSearch, allPossibleLanguages]);
 
   // Helper function to format last login timestamp
   const formatLastLogin = (lastLogin: string | null | undefined) => {
@@ -1477,8 +1489,8 @@ export function EmployeesContent() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Branches</SelectItem>
-            {Array.from(new Set(employees.map(emp => emp.branches?.name).filter(Boolean))).map((branch) => (
-              <SelectItem key={branch as string} value={branch as string}>{branch as string}</SelectItem>
+            {Array.from(new Set(employees.map(emp => emp.branches?.name).filter(Boolean))).map(branch => (
+              <SelectItem key={branch} value={branch!}>{branch}</SelectItem>
             ))}
           </SelectContent>
         </Select>

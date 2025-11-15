@@ -28,9 +28,6 @@ import { DownloadButton } from "@/components/ui/download-button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { JobApplication, useJobApplications, useJobApplicationActions, useJobApplicationStatusOptions } from '@/hooks/queries/useJobApplicationQueries';
-import { useLanguageOptions } from '@/hooks/queries/useLanguageQueries';
-import { ALL_LANGUAGES } from '@/constants/languages';
 import { EditApplicationDialog } from "./EditApplicationDialog";
 // Helper function to format dates from YYYY-MM-DD to MM/DD/YYYY
 const formatDateDisplay = (dateString: string | null | undefined): string => {
@@ -50,6 +47,21 @@ const formatDateDisplay = (dateString: string | null | undefined): string => {
     return dateString; // Return original if conversion fails
   }
 };
+
+interface JobApplication {
+  id: string;
+  personal_info: any;
+  availability: any;
+  emergency_contact: any;
+  employment_history: any;
+  reference_info: any;
+  skills_experience: any;
+  declarations: any;
+  consent: any;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export type JobApplicationSortField = 'applicant_name' | 'position' | 'created_at' | 'postcode' | 'english_proficiency';
 export type JobApplicationSortDirection = 'asc' | 'desc';
@@ -74,6 +86,33 @@ export function JobApplicationsContent() {
   const [isLanguagePopoverOpen, setIsLanguagePopoverOpen] = useState(false);
   
   // Comprehensive list of common languages
+  const allPossibleLanguages = [
+    "Afrikaans", "Albanian", "Amharic", "Arabic", "Armenian", "Assamese", "Azerbaijani",
+    "Basque", "Belarusian", "Bengali", "Bosnian", "Bulgarian", "Burmese",
+    "Catalan", "Cebuano", "Chinese", "Corsican", "Croatian", "Czech",
+    "Danish", "Dutch",
+    "English", "Esperanto", "Estonian",
+    "Filipino", "Finnish", "French", "Frisian",
+    "Galician", "Georgian", "German", "Greek", "Gujarati",
+    "Haitian Creole", "Hausa", "Hawaiian", "Hebrew", "Hindi", "Hmong", "Hungarian",
+    "Icelandic", "Igbo", "Indonesian", "Irish", "Italian",
+    "Japanese", "Javanese",
+    "Kannada", "Kazakh", "Khmer", "Korean", "Kurdish", "Kyrgyz",
+    "Lao", "Latin", "Latvian", "Lithuanian", "Luxembourgish",
+    "Macedonian", "Malagasy", "Malay", "Malayalam", "Maltese", "Mandarin", "Maori", "Marathi", "Mongolian",
+    "Nepali", "Norwegian",
+    "Odia", "Pashto", "Persian", "Polish", "Portuguese", "Punjabi",
+    "Romanian", "Russian",
+    "Samoan", "Scots Gaelic", "Serbian", "Sesotho", "Shona", "Sindhi", "Sinhala", "Slovak", "Slovenian", 
+    "Somali", "Spanish", "Sundanese", "Swahili", "Swedish",
+    "Tagalog", "Tajik", "Tamil", "Tatar", "Telugu", "Thai", "Turkish", "Turkmen",
+    "Ukrainian", "Urdu", "Uyghur", "Uzbek",
+    "Vietnamese",
+    "Welsh",
+    "Xhosa",
+    "Yiddish", "Yoruba",
+    "Zulu"
+  ];
   const { toast } = useToast();
   const { companySettings } = useCompany();
   const { user } = useAuth();
@@ -121,12 +160,12 @@ export function JobApplicationsContent() {
     if (!languageSearch) return [];
     
     // Combine applicant languages with all possible languages
-    const allLanguages = new Set([...availableLanguages, ...ALL_LANGUAGES]);
+    const allLanguages = new Set([...availableLanguages, ...allPossibleLanguages]);
     
     return Array.from(allLanguages)
       .filter(lang => lang.toLowerCase().includes(languageSearch.toLowerCase()))
       .sort();
-  }, [availableLanguages, languageSearch]);
+  }, [availableLanguages, languageSearch, allPossibleLanguages]);
 
   // Filter applications locally using useMemo
   const filteredApplications = useMemo(() => {
