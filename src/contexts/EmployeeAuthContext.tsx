@@ -67,10 +67,10 @@ export function EmployeeAuthProvider({ children }: { children: ReactNode }) {
         return false;
       }
 
-      // Cast languages from Json to string[]
+      // Cast languages from Json to string[] and ensure it's an array
       setEmployee({
         ...employeeData,
-        languages: (employeeData.languages as string[]) || []
+        languages: Array.isArray(employeeData.languages) ? employeeData.languages as string[] : []
       });
       return true;
     } catch (error) {

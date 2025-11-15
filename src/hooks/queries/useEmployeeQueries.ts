@@ -61,11 +61,11 @@ async function fetchEmployees(): Promise<Employee[]> {
 
   if (error) throw error;
   
-  // Cast languages from Json to string[]
+  // Cast languages from Json to string[] and ensure proper type
   return (data || []).map(emp => ({
     ...emp,
-    languages: (emp.languages as string[]) || []
-  }));
+    languages: Array.isArray(emp.languages) ? emp.languages as string[] : []
+  })) as Employee[];
 }
 
 // Fetch branches
