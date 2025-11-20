@@ -49,20 +49,27 @@ serve(async (req) => {
     // Generate upload link
     const uploadLink = `${Deno.env.get('SITE_URL') || 'http://localhost:5173'}/document-upload?token=${token}`;
 
-    // Get company settings for email
+    // Get email settings using RPC
+    const { data: emailSettings, error: settingsError } = await supabase.rpc('get_email_settings');
+    if (settingsError) {
+      console.error('Error fetching email settings:', settingsError);
+    }
+
+    // Get company name
     const { data: companyData } = await supabase
       .from('company_settings')
-      .select('name, email')
+      .select('name')
       .single();
 
     const companyName = companyData?.name || 'Our Company';
-    const fromEmail = companyData?.email || 'noreply@company.com';
+    const senderEmail = emailSettings?.sender_email || 'noreply@company.com';
+    const senderName = emailSettings?.sender_name || companyName;
 
     // Send email via Brevo
     const emailContent = {
       sender: {
-        name: companyName,
-        email: fromEmail
+        name: senderName,
+        email: senderEmail
       },
       to: [{ email: applicantEmail, name: applicantName }],
       subject: 'Document Upload Request - Action Required',
