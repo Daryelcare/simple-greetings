@@ -66,14 +66,15 @@ export function UploadedDocumentsView({ applicationId }: UploadedDocumentsViewPr
     try {
       setLoading(true);
       
-      // Fetch document upload token info
+      // Fetch document upload token info - prioritize tokens with documents
       const { data: tokenData, error: tokenError } = await supabase
         .from('document_upload_tokens')
         .select('*')
         .eq('application_id', applicationId)
+        .order('used_at', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (tokenError && tokenError.code !== 'PGRST116') {
         console.error('Error fetching token:', tokenError);
